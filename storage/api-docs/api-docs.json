@@ -1,0 +1,276 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Pet Management API",
+        "description": "API for managing pets and bookings",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000",
+            "description": "Local Server"
+        }
+    ],
+    "paths": {
+        "/api/bookings": {
+            "get": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Get all bookings",
+                "operationId": "eb7c332e8ba161904a1c0071040f61a5",
+                "responses": {
+                    "200": {
+                        "description": "List of bookings"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Create a booking",
+                "operationId": "e33fa5a6507581f9b1e0d710a9a130d1",
+                "parameters": [
+                    {
+                        "name": "pet_id",
+                        "in": "query",
+                        "description": "Pet ID",
+                        "required": true
+                    },
+                    {
+                        "name": "owner_name",
+                        "in": "query",
+                        "description": "Owner name",
+                        "required": true
+                    },
+                    {
+                        "name": "service_type",
+                        "in": "query",
+                        "description": "Service type",
+                        "required": true
+                    },
+                    {
+                        "name": "check_in_date",
+                        "in": "query",
+                        "description": "Check in date",
+                        "required": true
+                    },
+                    {
+                        "name": "check_out_date",
+                        "in": "query",
+                        "description": "Check out date",
+                        "required": true
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Booking status",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Booking created"
+                    }
+                }
+            }
+        },
+        "/api/bookings/{id}": {
+            "get": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Get single booking",
+                "operationId": "ccb98678c3ca3c9e74460dbddc427ab0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Booking ID",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking details"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Update booking",
+                "operationId": "fb300db4391c22f2232e2814d49641c7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Booking ID",
+                        "required": true
+                    },
+                    {
+                        "name": "pet_id",
+                        "in": "query",
+                        "description": "Pet ID",
+                        "required": false
+                    },
+                    {
+                        "name": "owner_name",
+                        "in": "query",
+                        "description": "Owner name",
+                        "required": false
+                    },
+                    {
+                        "name": "service_type",
+                        "in": "query",
+                        "description": "Service type",
+                        "required": false
+                    },
+                    {
+                        "name": "check_in_date",
+                        "in": "query",
+                        "description": "Check in date",
+                        "required": false
+                    },
+                    {
+                        "name": "check_out_date",
+                        "in": "query",
+                        "description": "Check out date",
+                        "required": false
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Booking status",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking updated"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Delete booking",
+                "operationId": "9f51d8752d2471c30540b89c13e933df",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Booking ID",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking deleted"
+                    }
+                }
+            }
+        },
+        "/api/pets": {
+            "get": {
+                "tags": [
+                    "Pets"
+                ],
+                "summary": "Get all pets",
+                "operationId": "7b44ba1ad8a38f7865a2845fa9ebbfe3",
+                "responses": {
+                    "200": {
+                        "description": "List of pets"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Pets"
+                ],
+                "summary": "Create a pet",
+                "operationId": "9523721805529edb47b46332d56f2826",
+                "responses": {
+                    "201": {
+                        "description": "Pet created"
+                    }
+                }
+            }
+        },
+        "/api/pets/{id}": {
+            "get": {
+                "tags": [
+                    "Pets"
+                ],
+                "summary": "Get single pet",
+                "operationId": "25e25b195a59c4b940a33f9961ad6eed",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Pet ID",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pet details"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Pets"
+                ],
+                "summary": "Update pet",
+                "operationId": "652be7eab297dff87f093d849bdecb12",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Pet ID",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pet updated"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Pets"
+                ],
+                "summary": "Delete pet",
+                "operationId": "dab25348cae9362e48ade0e7cf34c465",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Pet ID",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pet deleted"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Bookings",
+            "description": "Bookings"
+        },
+        {
+            "name": "Pets",
+            "description": "Pets"
+        }
+    ]
+}
