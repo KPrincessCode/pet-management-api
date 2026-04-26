@@ -126,4 +126,36 @@ class BookingController extends Controller
             'message' => 'Booking deleted successfully'
         ]);
     }
+    public function approve($id)
+{
+    $booking = Booking::findOrFail($id);
+
+    if ($booking->payment_status !== 'paid') {
+        return response()->json([
+            'message' => 'Booking cannot be approved until payment is paid.'
+        ], 400);
+    }
+
+    $booking->status = 'Approved';
+    $booking->save();
+
+    return response()->json([
+        'message' => 'Booking approved',
+        'data' => $booking
+    ]);
+}
+
+public function reject($id)
+{
+    $booking = Booking::findOrFail($id);
+
+    $booking->update([
+        'status' => 'Rejected'
+    ]);
+
+    return response()->json([
+        'message' => 'Booking rejected',
+        'data' => $booking
+    ]);
+}
 }
