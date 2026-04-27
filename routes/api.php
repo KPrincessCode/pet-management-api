@@ -18,3 +18,5 @@ Route::put('/bookings/{id}', [BookingController::class, 'update']);
 Route::delete('/bookings/{id}', [BookingController::class, 'destroy']);
 Route::put('/bookings/{id}/approve', [BookingController::class, 'approve']);
 Route::put('/bookings/{id}/reject', [BookingController::class, 'reject']);
+Route::put('/bookings/{id}/check-in', [BookingController::class, 'checkIn']);
+Route::put('/bookings/{id}/check-out', [BookingController::class, 'checkOut']);

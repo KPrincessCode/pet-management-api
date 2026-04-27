@@ -25,4 +25,5 @@ class Booking extends Model
     {
         return $this->belongsTo(Pet::class);
     }
+   
 }

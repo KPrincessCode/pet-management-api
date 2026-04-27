@@ -14,52 +14,55 @@ class BookingController extends Controller
         tags: ['Bookings']
     )]
     #[OA\Response(response: 200, description: 'List of bookings')]
-   public function index()
-{
-    return Booking::all();
-}
+    public function index()
+    {
+        // 🔥 LOAD PET RELATION
+        $bookings = Booking::with('pet')->get();
+
+        // 🔥 ADD pet_name dynamically
+        $bookings->transform(function ($booking) {
+            $booking->pet_name = $booking->pet ? $booking->pet->name : 'Unknown Pet';
+            return $booking;
+        });
+
+        return response()->json($bookings);
+    }
 
     #[OA\Post(
         path: '/api/bookings',
         summary: 'Create a booking',
         tags: ['Bookings']
     )]
-    #[OA\Parameter(name: 'pet_id', in: 'query', required: true, description: 'Pet ID')]
-    #[OA\Parameter(name: 'owner_name', in: 'query', required: true, description: 'Owner name')]
-    #[OA\Parameter(name: 'service_type', in: 'query', required: true, description: 'Service type')]
-    #[OA\Parameter(name: 'check_in_date', in: 'query', required: true, description: 'Check in date')]
-    #[OA\Parameter(name: 'check_out_date', in: 'query', required: true, description: 'Check out date')]
-    #[OA\Parameter(name: 'status', in: 'query', required: false, description: 'Booking status')]
     #[OA\Response(response: 201, description: 'Booking created')]
     public function store(Request $request)
     {
-       $request->validate([
-    'pet_id' => 'required|exists:pets,id',
-    'owner_name' => 'required|string|max:255',
-    'service_type' => 'required|string|max:255',
-    'pet_type' => 'required|string|max:255',
-    'medicine_needed' => 'nullable|string|max:255',
-    'injection_status' => 'nullable|string|max:255',
-    'check_in_date' => 'required|date',
-    'check_out_date' => 'required|date',
-    'payment_amount' => 'nullable|numeric',
-    'payment_status' => 'nullable|string|max:255',
-    'status' => 'nullable|string|max:255',
-]);
+        $request->validate([
+            'pet_id' => 'required|exists:pets,id',
+            'owner_name' => 'required|string|max:255',
+            'service_type' => 'required|string|max:255',
+            'pet_type' => 'required|string|max:255',
+            'medicine_needed' => 'nullable|string|max:255',
+            'injection_status' => 'nullable|string|max:255',
+            'check_in_date' => 'required|date',
+            'check_out_date' => 'required|date',
+            'payment_amount' => 'nullable|numeric',
+            'payment_status' => 'nullable|string|max:255',
+            'status' => 'nullable|string|max:255',
+        ]);
 
-       $booking = Booking::create([
-    'pet_id' => $request->pet_id,
-    'owner_name' => $request->owner_name,
-    'service_type' => $request->service_type,
-    'pet_type' => $request->pet_type,
-    'medicine_needed' => $request->medicine_needed,
-    'injection_status' => $request->injection_status,
-    'check_in_date' => $request->check_in_date,
-    'check_out_date' => $request->check_out_date,
-    'payment_amount' => $request->payment_amount,
-    'payment_status' => $request->payment_status ?? 'unpaid',
-    'status' => $request->status ?? 'Pending',
-]);
+        $booking = Booking::create([
+            'pet_id' => $request->pet_id,
+            'owner_name' => $request->owner_name,
+            'service_type' => $request->service_type,
+            'pet_type' => $request->pet_type,
+            'medicine_needed' => $request->medicine_needed,
+            'injection_status' => $request->injection_status,
+            'check_in_date' => $request->check_in_date,
+            'check_out_date' => $request->check_out_date,
+            'payment_amount' => $request->payment_amount,
+            'payment_status' => $request->payment_status ?? 'unpaid',
+            'status' => $request->status ?? 'Pending',
+        ]);
 
         return response()->json($booking, 201);
     }
@@ -69,43 +72,38 @@ class BookingController extends Controller
         summary: 'Get single booking',
         tags: ['Bookings']
     )]
-    #[OA\Parameter(name: 'id', in: 'path', required: true, description: 'Booking ID')]
     #[OA\Response(response: 200, description: 'Booking details')]
     public function show($id)
-{
-    return Booking::findOrFail($id);
-}
+    {
+        $booking = Booking::with('pet')->findOrFail($id);
+        $booking->pet_name = $booking->pet ? $booking->pet->name : 'Unknown Pet';
+
+        return response()->json($booking);
+    }
 
     #[OA\Put(
         path: '/api/bookings/{id}',
         summary: 'Update booking',
         tags: ['Bookings']
     )]
-    #[OA\Parameter(name: 'id', in: 'path', required: true, description: 'Booking ID')]
-    #[OA\Parameter(name: 'pet_id', in: 'query', required: false, description: 'Pet ID')]
-    #[OA\Parameter(name: 'owner_name', in: 'query', required: false, description: 'Owner name')]
-    #[OA\Parameter(name: 'service_type', in: 'query', required: false, description: 'Service type')]
-    #[OA\Parameter(name: 'check_in_date', in: 'query', required: false, description: 'Check in date')]
-    #[OA\Parameter(name: 'check_out_date', in: 'query', required: false, description: 'Check out date')]
-    #[OA\Parameter(name: 'status', in: 'query', required: false, description: 'Booking status')]
     #[OA\Response(response: 200, description: 'Booking updated')]
     public function update(Request $request, $id)
     {
         $booking = Booking::findOrFail($id);
 
         $booking->update([
-    'pet_id' => $request->pet_id ?? $booking->pet_id,
-    'owner_name' => $request->owner_name ?? $booking->owner_name,
-    'service_type' => $request->service_type ?? $booking->service_type,
-    'pet_type' => $request->pet_type ?? $booking->pet_type,
-    'medicine_needed' => $request->medicine_needed ?? $booking->medicine_needed,
-    'injection_status' => $request->injection_status ?? $booking->injection_status,
-    'check_in_date' => $request->check_in_date ?? $booking->check_in_date,
-    'check_out_date' => $request->check_out_date ?? $booking->check_out_date,
-    'payment_amount' => $request->payment_amount ?? $booking->payment_amount,
-    'payment_status' => $request->payment_status ?? $booking->payment_status,
-    'status' => $request->status ?? $booking->status,
-]);
+            'pet_id' => $request->pet_id ?? $booking->pet_id,
+            'owner_name' => $request->owner_name ?? $booking->owner_name,
+            'service_type' => $request->service_type ?? $booking->service_type,
+            'pet_type' => $request->pet_type ?? $booking->pet_type,
+            'medicine_needed' => $request->medicine_needed ?? $booking->medicine_needed,
+            'injection_status' => $request->injection_status ?? $booking->injection_status,
+            'check_in_date' => $request->check_in_date ?? $booking->check_in_date,
+            'check_out_date' => $request->check_out_date ?? $booking->check_out_date,
+            'payment_amount' => $request->payment_amount ?? $booking->payment_amount,
+            'payment_status' => $request->payment_status ?? $booking->payment_status,
+            'status' => $request->status ?? $booking->status,
+        ]);
 
         return response()->json($booking);
     }
@@ -115,7 +113,6 @@ class BookingController extends Controller
         summary: 'Delete booking',
         tags: ['Bookings']
     )]
-    #[OA\Parameter(name: 'id', in: 'path', required: true, description: 'Booking ID')]
     #[OA\Response(response: 200, description: 'Booking deleted')]
     public function destroy($id)
     {
@@ -126,35 +123,94 @@ class BookingController extends Controller
             'message' => 'Booking deleted successfully'
         ]);
     }
-    public function approve($id)
-{
-    $booking = Booking::findOrFail($id);
 
-    if ($booking->payment_status !== 'paid') {
+    // ✅ APPROVE
+    public function approve(Request $request, $id)
+    {
+        $booking = Booking::find($id);
+
+        if (!$booking) {
+            return response()->json(['message' => 'Booking not found'], 404);
+        }
+
+        if ($booking->payment_status !== 'paid') {
+            return response()->json([
+                'message' => 'Booking cannot be approved until payment is paid.'
+            ], 400);
+        }
+
+        $booking->status = 'Approved';
+        $booking->admin_notes = $request->admin_notes ?? 'Booking approved. Please prepare your pet for check-in.';
+        $booking->save();
+
         return response()->json([
-            'message' => 'Booking cannot be approved until payment is paid.'
+            'message' => 'Booking approved',
+            'data' => $booking
+        ]);
+    }
+
+    // ❌ REJECT
+    public function reject(Request $request, $id)
+    {
+        $booking = Booking::find($id);
+
+        if (!$booking) {
+            return response()->json(['message' => 'Booking not found'], 404);
+        }
+
+        $booking->status = 'Rejected';
+        $booking->admin_notes = $request->admin_notes ?? 'Booking rejected. Please contact the clinic for more information.';
+        $booking->save();
+
+        return response()->json([
+            'message' => 'Booking rejected',
+            'data' => $booking
+        ]);
+    }
+    public function checkIn($id)
+{
+    $booking = Booking::find($id);
+
+    if (!$booking) {
+        return response()->json(['message' => 'Booking not found'], 404);
+    }
+
+    if ($booking->status !== 'Approved') {
+        return response()->json([
+            'message' => 'Only approved bookings can be checked in.'
         ], 400);
     }
 
-    $booking->status = 'Approved';
+    $booking->status = 'Checked In';
+    $booking->boarding_status = 'Checked In';
     $booking->save();
 
     return response()->json([
-        'message' => 'Booking approved',
+        'message' => 'Pet checked in successfully',
         'data' => $booking
     ]);
 }
 
-public function reject($id)
+public function checkOut($id)
 {
-    $booking = Booking::findOrFail($id);
+    $booking = Booking::find($id);
 
-    $booking->update([
-        'status' => 'Rejected'
-    ]);
+    if (!$booking) {
+        return response()->json(['message' => 'Booking not found'], 404);
+    }
+
+    if ($booking->status !== 'Checked In') {
+        return response()->json([
+            'message' => 'Only checked-in pets can be checked out.'
+        ], 400);
+    }
+
+    $booking->status = 'Checked Out';
+    $booking->boarding_status = 'Checked Out';
+    $booking->save();
 
     return response()->json([
-        'message' => 'Booking rejected',
+        'message' => 'Pet checked out successfully',
         'data' => $booking
     ]);
 }
